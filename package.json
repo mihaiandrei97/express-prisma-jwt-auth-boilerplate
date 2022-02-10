@@ -1,0 +1,35 @@
+{
+  "name": "express-api-starter",
+  "version": "1.2.0",
+  "description": " A basic starter for an express.js API",
+  "main": "index.js",
+  "scripts": {
+    "start": "node src/index.js",
+    "dev": "nodemon src/index.js",
+    "lint": "eslint --fix src",
+    "test": "mocha --exit"
+  },
+  "keywords": [],
+  "author": "Mihai Adrian Andrei",
+  "license": "MIT",
+  "dependencies": {
+    "@prisma/client": "^3.9.1",
+    "bcrypt": "^5.0.1",
+    "cors": "^2.8.5",
+    "dotenv": "^10.0.0",
+    "express": "^4.17.1",
+    "helmet": "^4.6.0",
+    "jsonwebtoken": "^8.5.1",
+    "morgan": "^1.10.0",
+    "prisma": "^3.9.1",
+    "uuid": "^8.3.2"
+  },
+  "devDependencies": {
+    "eslint": "^7.28.0",
+    "eslint-config-airbnb-base": "^14.2.1",
+    "eslint-plugin-import": "^2.23.4",
+    "mocha": "^9.0.0",
+    "nodemon": "^2.0.7",
+    "supertest": "^6.1.3"
+  }
+}
