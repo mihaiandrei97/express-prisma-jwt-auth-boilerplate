@@ -15,6 +15,7 @@ const {
   revokeTokens
 } = require('./auth.services');
 const { hashToken } = require('../../utils/hashToken');
+const { sendRefreshToken } = require('../../utils/sendRefreshToken');
 
 const router = express.Router();
 
@@ -38,9 +39,10 @@ router.post('/register', async (req, res, next) => {
     const { accessToken, refreshToken } = generateTokens(user, jti);
     await addRefreshTokenToWhitelist({ jti, refreshToken, userId: user.id });
 
+    sendRefreshToken(res, refreshToken);
+
     res.json({
-      accessToken,
-      refreshToken
+      accessToken
     });
   } catch (err) {
     next(err);
@@ -71,10 +73,10 @@ router.post('/login', async (req, res, next) => {
     const jti = uuidv4();
     const { accessToken, refreshToken } = generateTokens(existingUser, jti);
     await addRefreshTokenToWhitelist({ jti, refreshToken, userId: existingUser.id });
+    sendRefreshToken(res, refreshToken);
 
     res.json({
-      accessToken,
-      refreshToken
+      accessToken
     });
   } catch (err) {
     next(err);
@@ -83,14 +85,13 @@ router.post('/login', async (req, res, next) => {
 
 router.post('/refreshToken', async (req, res, next) => {
   try {
-    const { refreshToken } = req.body;
+    const refreshToken = req.cookies.refresh_token;
     if (!refreshToken) {
       res.status(400);
       throw new Error('Missing refresh token.');
     }
     const payload = jwt.verify(refreshToken, process.env.JWT_REFRESH_SECRET);
     const savedRefreshToken = await findRefreshTokenById(payload.jti);
-
     if (!savedRefreshToken || savedRefreshToken.revoked === true) {
       res.status(401);
       throw new Error('Unauthorized');
@@ -113,9 +114,9 @@ router.post('/refreshToken', async (req, res, next) => {
     const { accessToken, refreshToken: newRefreshToken } = generateTokens(user, jti);
     await addRefreshTokenToWhitelist({ jti, refreshToken: newRefreshToken, userId: user.id });
 
+    sendRefreshToken(res, newRefreshToken);
     res.json({
       accessToken,
-      refreshToken: newRefreshToken
     });
   } catch (err) {
     next(err);
