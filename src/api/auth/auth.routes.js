@@ -84,8 +84,17 @@ router.post('/refreshToken', async (req, res, next) => {
       throw new Error('Missing refresh token.');
     }
     const savedRefreshToken = await findRefreshToken(refreshToken);
+    console.log({
+      expireAt: savedRefreshToken.expireAt,
+      now: new Date(),
+      isExpired: Date.now() >= savedRefreshToken.expireAt.getTime(),
+    });
 
-    if (!savedRefreshToken || savedRefreshToken.revoked === true) {
+    if (
+      !savedRefreshToken
+      || savedRefreshToken.revoked === true
+      || Date.now() >= savedRefreshToken.expireAt.getTime()
+    ) {
       res.status(401);
       throw new Error('Unauthorized');
     }
@@ -98,7 +107,10 @@ router.post('/refreshToken', async (req, res, next) => {
 
     await deleteRefreshTokenById(savedRefreshToken.id);
     const { accessToken, refreshToken: newRefreshToken } = generateTokens(user);
-    await addRefreshTokenToWhitelist({ refreshToken: newRefreshToken, userId: user.id });
+    await addRefreshTokenToWhitelist({
+      refreshToken: newRefreshToken,
+      userId: user.id,
+    });
 
     res.json({
       accessToken,

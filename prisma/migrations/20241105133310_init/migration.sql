@@ -27,3 +27,6 @@ CREATE UNIQUE INDEX "User_email_key" ON "User"("email");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "RefreshToken_id_key" ON "RefreshToken"("id");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "RefreshToken_hashedToken_key" ON "RefreshToken"("hashedToken");
