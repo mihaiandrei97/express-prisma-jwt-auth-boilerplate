@@ -71,3 +71,9 @@ typings/
 
 # Serverless directories
 .serverless
+
+# Database files
+*.db
+*.db-journal
+prisma/dev.db
+prisma/dev.db-journal
